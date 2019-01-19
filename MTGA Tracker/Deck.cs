@@ -59,7 +59,7 @@ namespace MTGA_Tracker
 
             if (regex.IsMatch(s))
             {
-                Console.WriteLine("yes\n\n###");
+                Console.WriteLine("###\n\nYes\n\n###\n\n");
 
                 //Create a collection containing the results
                 MatchCollection matchCollection = regex.Matches(s);
@@ -71,9 +71,21 @@ namespace MTGA_Tracker
                 string ss = matchCollection[matchCollection.Count - 1].Groups[1].Value + matchCollection[matchCollection.Count - 1].Groups[2].Value;
 
                 //Deserialize the deck list
-                List<CardList> cardList = JsonConvert.DeserializeObject<List<CardList>>(ss);
+                List<CardList> cardListWithPrecog = JsonConvert.DeserializeObject<List<CardList>>(ss);
 
-                //Return a collection of decks using only the latest result
+                //Create a deck list for deck, excluding precogs
+                List<CardList> cardList = new List<CardList>();
+
+                //Add to cardList every non-precog deck in cardListWithPrecog
+                foreach (var deck in cardListWithPrecog)
+                {
+                    if (!deck.name.Contains("?=?Loc/Decks/Precon/"))
+                    {
+                        cardList.Add(deck);
+                    }
+                }
+
+                //Return a collection of decks using only the latest result, excludind precogs
                 return cardList;
             }
             else
