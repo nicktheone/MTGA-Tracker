@@ -11,7 +11,7 @@ namespace MTGA_Tracker
     {
         static void Main(string[] args)
         {
-            Deck.GetDeckLists();
+            Console.WriteLine(Deck.GetDeckLists().Count);
 
             Console.ReadLine();
         }

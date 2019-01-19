@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MTGA_Tracker
 {
@@ -18,31 +19,42 @@ namespace MTGA_Tracker
 
         #endregion
 
-        #region constructors
+        #region JSON
 
-        #endregion
+        public class CardList
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+            public string description { get; set; }
+            public string format { get; set; }
+            public string resourceId { get; set; }
+            public int deckTileId { get; set; }
+            public List<MainDeck> mainDeck { get; set; }
+            public List<object> sideboard { get; set; }
+            public DateTime lastUpdated { get; set; }
+            public bool lockedForUse { get; set; }
+            public bool lockedForEdit { get; set; }
+            public bool isValid { get; set; }
+        }
 
-        #region properties
-
-        public string id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
-        public string format { get; set; }
-        public string resourceId { get; set; }
-        public string deckTileId { get; set; }
+        public class MainDeck
+        {
+            public string id { get; set; }
+            public int quantity { get; set; }
+        }
 
         #endregion
 
         #region methods
 
         //Get the whole deck list using RegEx, excluding precog decks
-        public static MatchCollection GetDeckLists()
+        public static List<CardList> GetDeckLists()
         {
             //Get the log file
             string s = GetLog();
 
             //Create the RegEx string and normalize new line characters
-            Regex regex = new Regex(@"(?:Deck.GetDeckLists\([\d]+\)(?:\n|\r|\r\n))(?:.*?)(?:}(?:\n\n|\r\r|\r\n\r\n)])", RegexOptions.Singleline);
+            Regex regex = new Regex(@"(?:Deck\.GetDeckLists\([\d]+\)(?:\n|\r|\r\n))(.*?)(}(?:\n\n|\r\r|\r\n\r\n)])", RegexOptions.Singleline);
             s = Regex.Replace(s, @"\r\n|\r|\n", "\r\n");
 
             if (regex.IsMatch(s))
@@ -52,12 +64,17 @@ namespace MTGA_Tracker
                 //Create a collection containing the results
                 MatchCollection matchCollection = regex.Matches(s);
 
-                Console.WriteLine("matchCollection count: " + matchCollection.Count);
-                Console.WriteLine("matchCollection[0].Groups count: " + matchCollection[0].Groups.Count);
-                //Console.WriteLine("###\n" + matchCollection[0].Groups[0].Value);
+                //Console.WriteLine("matchCollection count: " + matchCollection.Count);
+                //Console.WriteLine("matchCollection[0].Groups count: " + matchCollection[0].Groups.Count);
 
-                //Return the results
-                return matchCollection;
+                //Get the latest deck list and combines both capturing groups
+                string ss = matchCollection[matchCollection.Count - 1].Groups[1].Value + matchCollection[matchCollection.Count - 1].Groups[2].Value;
+
+                //Deserialize the deck list
+                List<CardList> cardList = JsonConvert.DeserializeObject<List<CardList>>(ss);
+
+                //Return a collection of decks using only the latest result
+                return cardList;
             }
             else
             {
@@ -65,15 +82,6 @@ namespace MTGA_Tracker
 
                 return null;
             }
-
-            //Console.WriteLine("matchCollection count: " + matchCollection.Count);
-            //Console.WriteLine("matchCollection[0].Groups count: " + matchCollection[0].Groups.Count);
-            //Console.WriteLine("###\n" + matchCollection[0].Groups[0].Value);
-
-            //foreach (Group group in matchCollection[0].Groups)
-            //{
-            //    Console.WriteLine("###\n" + group.Value + "\n");
-            //}
         }
 
         //Load the "output_log.txt" file ("%USERPROFILE%\AppData\LocalLow\Wizards Of The Coast\MTGA\output_log.txt")
@@ -103,30 +111,4 @@ namespace MTGA_Tracker
 
         #endregion
     }
-
-    #region JSON
-
-    public class MainDeck
-    {
-        public string id { get; set; }
-        public int quantity { get; set; }
-    }
-
-    public class RootObject
-    {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
-        public string format { get; set; }
-        public string resourceId { get; set; }
-        public int deckTileId { get; set; }
-        public List<MainDeck> mainDeck { get; set; }
-        public List<object> sideboard { get; set; }
-        public DateTime lastUpdated { get; set; }
-        public bool lockedForUse { get; set; }
-        public bool lockedForEdit { get; set; }
-        public bool isValid { get; set; }
-    }
-
-    #endregion
 }
