@@ -56,7 +56,7 @@ namespace MTGA_Tracker
 
             if (regex.IsMatch(s))
             {
-                Console.WriteLine("###\n\nYes\n\n###\n\n");
+                //Console.WriteLine("###\n\nYes match\n\n###\n\n");
 
                 //Create a collection containing the results
                 MatchCollection matchCollection = regex.Matches(s);

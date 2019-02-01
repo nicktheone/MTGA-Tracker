@@ -11,7 +11,7 @@ namespace MTGA_Tracker
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("###\n\n" + Deck.GetDeckLists().Count + "\n\n###");
+            Console.WriteLine("###\n\n" + Deck.GetDeckLists().Count + "\n\n###\n");
 
             foreach (var deck in Deck.GetDeckLists())
             {
