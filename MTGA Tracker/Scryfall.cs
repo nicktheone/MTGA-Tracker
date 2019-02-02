@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RestSharp;
 
 namespace MTGA_Tracker
 {
@@ -124,5 +121,10 @@ namespace MTGA_Tracker
         }
 
         #endregion
+
+        public static void Aaa()
+        {
+
+        }
     }
 }

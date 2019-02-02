@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MTGA_Tracker
 {
@@ -18,14 +17,35 @@ namespace MTGA_Tracker
         {
             public string id { get; set; }
             public int quantity { get; set; }
+            public string name { get; set; }
+            public string manaCost { get; set; }
+            public double cmc { get; set; }
+            public string power { get; set; }
+            public string toughness { get; set; }
+            public List<string> colors { get; set; }
+            public string setName { get; set; }
+            public ImageUris image_uris { get; set; }
+        }
+
+        public class ImageUris
+        {
+            public string small { get; set; }
+            public string normal { get; set; }
+            public string large { get; set; }
+            public string png { get; set; }
+            public string art_crop { get; set; }
+            public string border_crop { get; set; }
         }
 
         #endregion
 
         #region Methods
 
-        public static void Aaa(List<Log.Deck> logDecks)
+        public static List<Deck> FormatDeck()
         {
+            //Get decks from parsed log file
+            List<Log.Deck> logDecks = new List<Log.Deck>(Log.GetDecks());
+
             //Create a list containing every deck, pruning useless info
             List<Deck> decks = new List<Deck>();
 
@@ -43,20 +63,8 @@ namespace MTGA_Tracker
                     decks[i].mainDeck.Add(new Card() { id = card.id, quantity = card.quantity });
                 }
             }
-
-            Console.WriteLine("#####\n");
-            foreach (var deck in decks)
-            {
-                Console.WriteLine(deck.name + "\n");
-
-                foreach (var card in deck.mainDeck)
-                {
-                    Console.WriteLine("Card Id = {0}", card.id);
-                    Console.WriteLine("Card Quantity = {0}", card.quantity);
-                }
-
-                Console.WriteLine("\n#####\n");
-            }
+            
+            return decks;
         }
 
         #endregion

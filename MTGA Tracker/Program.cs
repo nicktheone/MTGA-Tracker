@@ -27,7 +27,19 @@ namespace MTGA_Tracker
             //    }
             //}
 
-            Decks.Aaa(Log.GetDecks());
+            Console.WriteLine("#####\n");
+            foreach (var deck in Decks.FormatDeck())
+            {
+                Console.WriteLine(deck.name + "\n");
+
+                foreach (var card in deck.mainDeck)
+                {
+                    Console.WriteLine("Card Id = {0}", card.id);
+                    Console.WriteLine("Card Quantity = {0}", card.quantity);
+                }
+
+                Console.WriteLine("\n#####\n");
+            }
 
             Console.ReadLine();
         }
