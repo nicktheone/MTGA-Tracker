@@ -1,24 +1,17 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
 namespace MTGA_Tracker
 {
-    class Deck
+    class Log
     {
-        #region DllImport
+        #region Deck
 
-        [DllImport("shell32.dll")]
-        static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags, IntPtr hToken, out IntPtr pszPath);
-
-        #endregion
-
-        #region JSON
-
-        public class CardList
+        public class Deck
         {
             public string id { get; set; }
             public string name { get; set; }
@@ -42,10 +35,17 @@ namespace MTGA_Tracker
 
         #endregion
 
-        #region methods
+        #region DllImport
+
+        [DllImport("shell32.dll")]
+        static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags, IntPtr hToken, out IntPtr pszPath);
+
+        #endregion
+
+        #region Methods
 
         //Get the whole deck list using RegEx, excluding precog decks
-        public static List<CardList> GetDeckLists()
+        public static List<Deck> GetDecks()
         {
             //Get the log file
             string s = GetLog();
@@ -68,10 +68,10 @@ namespace MTGA_Tracker
                 string ss = matchCollection[matchCollection.Count - 1].Groups[1].Value + matchCollection[matchCollection.Count - 1].Groups[2].Value;
 
                 //Deserialize the deck list
-                List<CardList> cardListWithPrecog = JsonConvert.DeserializeObject<List<CardList>>(ss);
+                List<Deck> cardListWithPrecog = JsonConvert.DeserializeObject<List<Deck>>(ss);
 
                 //Create a deck list for deck, excluding precogs
-                List<CardList> cardList = new List<CardList>();
+                List<Deck> cardList = new List<Deck>();
 
                 //Add to cardList every non-precog deck in cardListWithPrecog
                 foreach (var deck in cardListWithPrecog)
@@ -119,5 +119,6 @@ namespace MTGA_Tracker
         }
 
         #endregion
+
     }
 }
