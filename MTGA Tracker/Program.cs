@@ -6,6 +6,13 @@ namespace MTGA_Tracker
     {
         static void Main(string[] args)
         {
+            Test();
+
+            Console.ReadLine();
+        }
+
+        private static void Test()
+        {
             //Console.WriteLine("###\n\n" + Deck.GetDecks().Count + "\n\n###\n");
 
             //foreach (var deck in Deck.GetDecks())
@@ -27,21 +34,52 @@ namespace MTGA_Tracker
             //    }
             //}
 
-            Console.WriteLine("#####\n");
-            foreach (var deck in Decks.FormatDeck())
-            {
-                Console.WriteLine(deck.name + "\n");
+            //Console.WriteLine("#####\n");
+            //foreach (var deck in Decks.FormatDeck())
+            //{
+            //    Console.WriteLine(deck.name + "\n");
 
-                foreach (var card in deck.mainDeck)
-                {
-                    Console.WriteLine("Card Id = {0}", card.id);
-                    Console.WriteLine("Card Quantity = {0}", card.quantity);
-                }
+            //    foreach (var card in deck.mainDeck)
+            //    {
+            //        Console.WriteLine("Card Id = {0}", card.id);
+            //        Console.WriteLine("Card Quantity = {0}", card.quantity);
+            //    }
 
-                Console.WriteLine("\n#####\n");
-            }
+            //    Console.WriteLine("\n#####\n");
+            //}
 
-            Console.ReadLine();
+            //Scryfall.Aaa(Decks.FormatDeck());
+            //Console.WriteLine("Done!");
+
+            //Console.WriteLine("#####\n");
+            //foreach (var deck in Scryfall.Aaa(Decks.FormatDeck()))
+            //{
+            //    Console.WriteLine(deck.name + "\n");
+
+            //    foreach (var card in deck.mainDeck)
+            //    {
+            //        Console.WriteLine("Card Id = {0}", card.id);
+            //        Console.WriteLine("Card Quantity = {0}", card.quantity);
+            //        Console.WriteLine("Card Name = {0}", card.name);
+            //        Console.WriteLine("Card PNG URI = {0}", card.image_uris.png);
+            //    }
+
+            //    Console.WriteLine("\n#####\n");
+            //}
+
+            //Console.WriteLine("#####\n");
+            //var deck = Scryfall.Aaa(Decks.FormatDeck());
+            //Console.WriteLine(deck[0].name + "\n");
+
+            //foreach (var card in deck[0].mainDeck)
+            //{
+            //    Console.WriteLine("Card Id = {0}", card.id);
+            //    Console.WriteLine("Card Quantity = {0}", card.quantity);
+            //    Console.WriteLine("Card Name = {0}", card.name);
+            //    Console.WriteLine("Card PNG URI = {0}", card.image_uris.png);
+            //}
+
+            //Console.WriteLine("\n#####\n");
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using RestSharp;
+using System.Threading;
+using System;
 
 namespace MTGA_Tracker
 {
@@ -16,6 +18,22 @@ namespace MTGA_Tracker
             public string png { get; set; }
             public string art_crop { get; set; }
             public string border_crop { get; set; }
+
+            //Convert Scryfall.ImageUris to Decks.ImageUris
+            public static explicit operator Decks.ImageUris(ImageUris v)
+            {
+                Decks.ImageUris a = new Decks.ImageUris()
+                {
+                    small = v.small,
+                    normal = v.normal,
+                    large = v.large,
+                    png = v.png,
+                    art_crop = v.art_crop,
+                    border_crop = v.border_crop
+                };
+
+                return a;
+            }
         }
 
         public class Legalities
@@ -122,9 +140,42 @@ namespace MTGA_Tracker
 
         #endregion
 
-        public static void Aaa()
-        {
+        //URL for Scryfall
+        private const string url = "https://api.scryfall.com/";
 
+        public static List<Decks.Deck> Aaa(List<Decks.Deck> decks)
+        {
+            foreach (var card in decks[0].mainDeck)
+            {
+                var cardFromScryfall = GetCardFromScryfall(card.id);
+                card.name = cardFromScryfall.name;
+                card.manaCost = cardFromScryfall.mana_cost;
+                card.cmc = cardFromScryfall.cmc;
+                card.power = cardFromScryfall.power;
+                card.toughness = cardFromScryfall.toughness;
+                card.colors = cardFromScryfall.colors;
+                card.setName = cardFromScryfall.setName;
+                card.image_uris = (Decks.ImageUris)cardFromScryfall.image_uris;
+
+                Thread.Sleep(50);
+            }
+
+            return decks;
+        }
+
+        private static RootObject GetCardFromScryfall(string id)
+        {
+            var client = new RestClient(url);
+
+            var request = new RestRequest(string.Format("cards/arena/{0}", id), Method.GET);
+            request.AddHeader("Accept", "application/json");
+
+            IRestResponse response = client.Execute(request);
+            var content = response.Content;
+
+            RootObject card = JsonConvert.DeserializeObject<RootObject>(content);
+
+            return card;
         }
     }
 }
