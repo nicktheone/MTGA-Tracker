@@ -143,8 +143,10 @@ namespace MTGA_Tracker
         //URL for Scryfall
         private const string url = "https://api.scryfall.com/";
 
-        public static List<Decks.Deck> Aaa(List<Decks.Deck> decks)
+        public static List<Decks.Deck> AddDataFromScryfall()
         {
+            var decks = Decks.FormatDeck();
+
             foreach (var card in decks[0].mainDeck)
             {
                 var cardFromScryfall = GetCardFromScryfall(card.id);

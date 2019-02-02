@@ -67,19 +67,18 @@ namespace MTGA_Tracker
             //    Console.WriteLine("\n#####\n");
             //}
 
-            //Console.WriteLine("#####\n");
-            //var deck = Scryfall.Aaa(Decks.FormatDeck());
-            //Console.WriteLine(deck[0].name + "\n");
+            Console.WriteLine("#####\n");
+            var deck = Scryfall.AddDataFromScryfall();
+            Console.WriteLine(deck[0].name + "\n");
 
-            //foreach (var card in deck[0].mainDeck)
-            //{
-            //    Console.WriteLine("Card Id = {0}", card.id);
-            //    Console.WriteLine("Card Quantity = {0}", card.quantity);
-            //    Console.WriteLine("Card Name = {0}", card.name);
-            //    Console.WriteLine("Card PNG URI = {0}", card.image_uris.png);
-            //}
-
-            //Console.WriteLine("\n#####\n");
+            foreach (var card in deck[0].mainDeck)
+            {
+                Console.WriteLine("Card Id = {0}", card.id);
+                Console.WriteLine("Card Quantity = {0}", card.quantity);
+                Console.WriteLine("Card Name = {0}", card.name);
+                Console.WriteLine("Card PNG URI = {0}", card.image_uris.png);
+            }
+            Console.WriteLine("\n#####\n");
         }
     }
 }
