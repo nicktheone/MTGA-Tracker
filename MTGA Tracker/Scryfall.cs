@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using RestSharp;
 using System.Threading;
 using System;
+using System.IO;
+using RestSharp.Extensions;
 
 namespace MTGA_Tracker
 {
@@ -178,6 +180,32 @@ namespace MTGA_Tracker
             RootObject card = JsonConvert.DeserializeObject<RootObject>(content);
 
             return card;
+        }
+
+        //Download the whole card library from Scryfall
+        private static void DownloadBulkData()
+        {
+            var client = new RestClient("https://archive.scryfall.com/");
+            var request = new RestRequest("json/scryfall-rulings.json", Method.GET);
+
+            //If the app directory doesn't exist create it
+            if (!Directory.Exists(GetAppDataPath()))
+            {
+                Directory.CreateDirectory(GetAppDataPath());
+            }
+
+            client.DownloadData(request).SaveAs(GetAppDataPath() + @"\cards.json");
+        }
+
+        //Get the app folder path
+        private static string GetAppDataPath()
+        {
+            //Get the AppData path
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            //Don't add the "\" at the beginning of the path2 or else it'll return path2 (https://stackoverflow.com/questions/18008276/why-the-path-combine-is-not-combining-the-path-and-file)
+            string appPath = Path.Combine(appDataPath, @"MTGA Tracker");
+
+            return appPath;
         }
     }
 }
