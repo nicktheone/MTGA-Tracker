@@ -13,6 +13,11 @@ namespace MTGA_Tracker
 
         private static void Test()
         {
+            //foreach (var card in Scryfall.AddDataFromScryfall()[0].mainDeck)
+            //{
+            //    Console.WriteLine(card.name);
+            //}
+
             //Console.WriteLine("###\n\n" + Deck.GetDecks().Count + "\n\n###\n");
 
             //foreach (var deck in Deck.GetDecks())

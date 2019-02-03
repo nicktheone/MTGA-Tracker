@@ -41,7 +41,8 @@ namespace MTGA_Tracker
 
         #region Methods
 
-        public static List<Deck> FormatDeck()
+        //Get decks from log and format them to a more useful structure
+        public static List<Deck> FormatDecks()
         {
             //Get decks from parsed log file
             List<Log.Deck> logDecks = new List<Log.Deck>(Log.GetDecks());

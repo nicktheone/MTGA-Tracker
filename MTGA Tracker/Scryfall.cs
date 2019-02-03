@@ -5,6 +5,9 @@ using System.Threading;
 using System;
 using System.IO;
 using RestSharp.Extensions;
+using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Text;
 
 namespace MTGA_Tracker
 {
@@ -142,16 +145,19 @@ namespace MTGA_Tracker
 
         #endregion
 
-        //URL for Scryfall
-        private const string url = "https://api.scryfall.com/";
-
+        //Add the data from the bulk of Scryfall to each card
         public static List<Decks.Deck> AddDataFromScryfall()
         {
-            var decks = Decks.FormatDeck();
+            //Get a list of formatted decks
+            List<Decks.Deck> decks = Decks.FormatDecks();
+            //Load the whole library
+            List<RootObject> bulkCard = GetCardFromBulkScryfall();
 
+            //Add to each card it's correspective data from Scryfall
             foreach (var card in decks[0].mainDeck)
             {
-                var cardFromScryfall = GetCardFromScryfall(card.id);
+                //var cardFromScryfall = GetCardFromScryfall(card.id);
+                var cardFromScryfall = bulkCard.Where(x => Convert.ToString(x.arena_id) == card.id).FirstOrDefault();
                 card.name = cardFromScryfall.name;
                 card.manaCost = cardFromScryfall.mana_cost;
                 card.cmc = cardFromScryfall.cmc;
@@ -160,8 +166,6 @@ namespace MTGA_Tracker
                 card.colors = cardFromScryfall.colors;
                 card.setName = cardFromScryfall.setName;
                 card.image_uris = (Decks.ImageUris)cardFromScryfall.image_uris;
-
-                Thread.Sleep(50);
             }
 
             return decks;
@@ -169,7 +173,7 @@ namespace MTGA_Tracker
 
         private static RootObject GetCardFromScryfall(string id)
         {
-            var client = new RestClient(url);
+            var client = new RestClient("https://api.scryfall.com/");
 
             var request = new RestRequest(string.Format("cards/arena/{0}", id), Method.GET);
             request.AddHeader("Accept", "application/json");
@@ -182,11 +186,26 @@ namespace MTGA_Tracker
             return card;
         }
 
+        //Deserialize the whole Scryfall library
+        private static List<RootObject> GetCardFromBulkScryfall()
+        {
+            string s = null;
+
+            using (StreamReader streamReader = new StreamReader(Path.Combine(GetAppDataPath(), @"scryfall-default-cards.json")))
+            {
+                s = streamReader.ReadToEnd();
+            }
+
+            List<RootObject> cards = JsonConvert.DeserializeObject<List<RootObject>>(s);
+
+            return cards;
+        }
+
         //Download the whole card library from Scryfall
         private static void DownloadBulkData()
         {
             var client = new RestClient("https://archive.scryfall.com/");
-            var request = new RestRequest("json/scryfall-rulings.json", Method.GET);
+            var request = new RestRequest("json/scryfall-default-cards.json", Method.GET);
 
             //If the app directory doesn't exist create it
             if (!Directory.Exists(GetAppDataPath()))
