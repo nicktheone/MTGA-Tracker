@@ -18,12 +18,27 @@ namespace MTGA_Tracker
             public string id { get; set; }
             public int quantity { get; set; }
             public string name { get; set; }
+            public string layout { get; set; }
+            public List<CardFace> card_faces { get; set; }
             public string manaCost { get; set; }
             public double cmc { get; set; }
             public string power { get; set; }
             public string toughness { get; set; }
             public List<string> colors { get; set; }
             public string setName { get; set; }
+            public ImageUris image_uris { get; set; }
+        }
+
+        public class CardFace
+        {
+            public string name { get; set; }
+            public string mana_cost { get; set; }
+            public string type_line { get; set; }
+            public string oracle_text { get; set; }
+            public List<object> colors { get; set; }
+            public string flavor_text { get; set; }
+            public string artist { get; set; }
+            public string illustration_id { get; set; }
             public ImageUris image_uris { get; set; }
         }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MTGA_Tracker
 {
@@ -13,11 +15,22 @@ namespace MTGA_Tracker
 
         private static void Test()
         {
-            //foreach (var card in Scryfall.AddDataFromScryfall()[0].mainDeck)
-            //{
-            //    Console.WriteLine(card.name);
-            //}
+            List<Decks.Deck> decks = Scryfall.AddDataFromScryfall();
+            foreach (var deck in decks)
+            {
+                Console.WriteLine("#####\nDeck name: " + deck.name + "\n#####\n");
+                foreach (var card in deck.mainDeck)
+                {
+                    Console.WriteLine(card.name + " " + card.quantity);
+                }
+                Console.WriteLine("\n");
+            }
 
+            foreach (var cardFace in decks[8].mainDeck[21].card_faces)
+            {
+                Console.WriteLine(cardFace.name);
+            }
+            
             //Console.WriteLine("###\n\n" + Deck.GetDecks().Count + "\n\n###\n");
 
             //foreach (var deck in Deck.GetDecks())

@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using RestSharp;
-using System.Threading;
 using System;
 using System.IO;
 using RestSharp.Extensions;
-using Newtonsoft.Json.Linq;
 using System.Linq;
-using System.Text;
 
 namespace MTGA_Tracker
 {
@@ -23,6 +20,36 @@ namespace MTGA_Tracker
             public string png { get; set; }
             public string art_crop { get; set; }
             public string border_crop { get; set; }
+
+            //Convert Scryfall.ImageUris to Decks.ImageUris
+            public static explicit operator Decks.ImageUris(ImageUris v)
+            {
+                Decks.ImageUris a = new Decks.ImageUris()
+                {
+                    small = v.small,
+                    normal = v.normal,
+                    large = v.large,
+                    png = v.png,
+                    art_crop = v.art_crop,
+                    border_crop = v.border_crop
+                };
+
+                return a;
+            }
+        }
+
+        public class CardFace
+        {
+            public string @object { get; set; }
+            public string name { get; set; }
+            public string mana_cost { get; set; }
+            public string type_line { get; set; }
+            public string oracle_text { get; set; }
+            public List<object> colors { get; set; }
+            public string flavor_text { get; set; }
+            public string artist { get; set; }
+            public string illustration_id { get; set; }
+            public ImageUris image_uris { get; set; }
 
             //Convert Scryfall.ImageUris to Decks.ImageUris
             public static explicit operator Decks.ImageUris(ImageUris v)
@@ -88,6 +115,7 @@ namespace MTGA_Tracker
             public string oracle_id { get; set; }
             public List<int> multiverse_ids { get; set; }
             public int mtgo_id { get; set; }
+            public int mtgo_foil_id { get; set; }
             public int arena_id { get; set; }
             public int tcgplayer_id { get; set; }
             public string name { get; set; }
@@ -106,6 +134,7 @@ namespace MTGA_Tracker
             public string toughness { get; set; }
             public List<string> colors { get; set; }
             public List<string> color_identity { get; set; }
+            public List<CardFace> card_faces { get; set; }
             public Legalities legalities { get; set; }
             public List<string> games { get; set; }
             public bool reserved { get; set; }
@@ -153,19 +182,46 @@ namespace MTGA_Tracker
             //Load the whole library
             List<RootObject> bulkCard = GetCardFromBulkScryfall();
 
-            //Add to each card it's correspective data from Scryfall
-            foreach (var card in decks[0].mainDeck)
+            foreach (var deck in decks)
             {
-                //var cardFromScryfall = GetCardFromScryfall(card.id);
-                var cardFromScryfall = bulkCard.Where(x => Convert.ToString(x.arena_id) == card.id).FirstOrDefault();
-                card.name = cardFromScryfall.name;
-                card.manaCost = cardFromScryfall.mana_cost;
-                card.cmc = cardFromScryfall.cmc;
-                card.power = cardFromScryfall.power;
-                card.toughness = cardFromScryfall.toughness;
-                card.colors = cardFromScryfall.colors;
-                card.setName = cardFromScryfall.setName;
-                card.image_uris = (Decks.ImageUris)cardFromScryfall.image_uris;
+                //Add to each card it's correspective data from Scryfall
+                //Missin 69781 and issues with 66459 and 66109 (transforming cards)
+                foreach (var card in deck.mainDeck)
+                {
+                    try
+                    {
+                        //var cardFromScryfall = GetCardFromScryfall(card.id);
+                        RootObject cardFromScryfall = bulkCard.Where(x => Convert.ToString(x.arena_id) == card.id).FirstOrDefault();
+                        card.name = cardFromScryfall.name;
+                        card.manaCost = cardFromScryfall.mana_cost;
+                        card.cmc = cardFromScryfall.cmc;
+                        card.power = cardFromScryfall.power;
+                        card.toughness = cardFromScryfall.toughness;
+                        card.colors = cardFromScryfall.colors;
+                        card.setName = cardFromScryfall.setName;
+
+                        //Check if card is multi-faced
+                        if (cardFromScryfall.layout == "transform")
+                        {
+                            //Take each card face and converts them (https://stackoverflow.com/questions/40148491/cast-class-a-to-class-b-without-generics/40148572#40148572)
+                            card.card_faces = cardFromScryfall.card_faces.Select(a => new Decks.CardFace
+                            {
+                                name = a.name,
+                                mana_cost = a.mana_cost,
+                                image_uris = (Decks.ImageUris)a.image_uris
+                            }).ToList();
+                        }
+                        else
+                        {
+                            card.image_uris = (Decks.ImageUris)cardFromScryfall.image_uris;
+                        }
+                    }
+                    //Output which card is giving issues
+                    catch (NullReferenceException)
+                    {
+                        Console.WriteLine("ERROR: card missing {0}", card.id);
+                    }
+                }
             }
 
             return decks;
