@@ -50,22 +50,6 @@ namespace MTGA_Tracker
             public string artist { get; set; }
             public string illustration_id { get; set; }
             public ImageUris image_uris { get; set; }
-
-            //Convert Scryfall.ImageUris to Decks.ImageUris
-            public static explicit operator Decks.ImageUris(ImageUris v)
-            {
-                Decks.ImageUris a = new Decks.ImageUris()
-                {
-                    small = v.small,
-                    normal = v.normal,
-                    large = v.large,
-                    png = v.png,
-                    art_crop = v.art_crop,
-                    border_crop = v.border_crop
-                };
-
-                return a;
-            }
         }
 
         public class Legalities
@@ -185,7 +169,6 @@ namespace MTGA_Tracker
             foreach (var deck in decks)
             {
                 //Add to each card it's correspective data from Scryfall
-                //Missin 69781 and issues with 66459 and 66109 (transforming cards)
                 foreach (var card in deck.mainDeck)
                 {
                     try
@@ -204,7 +187,7 @@ namespace MTGA_Tracker
                         if (cardFromScryfall.layout == "transform")
                         {
                             //Take each card face and converts them (https://stackoverflow.com/questions/40148491/cast-class-a-to-class-b-without-generics/40148572#40148572)
-                            card.card_faces = cardFromScryfall.card_faces.Select(a => new Decks.CardFace
+                            card.card_faces = cardFromScryfall.card_faces.Select(a => new Decks.CardFace()
                             {
                                 name = a.name,
                                 mana_cost = a.mana_cost,
@@ -269,7 +252,7 @@ namespace MTGA_Tracker
                 Directory.CreateDirectory(GetAppDataPath());
             }
 
-            client.DownloadData(request).SaveAs(GetAppDataPath() + @"\cards.json");
+            client.DownloadData(request).SaveAs(GetAppDataPath() + @"\scryfall-default-cards.json");
         }
 
         //Get the app folder path
