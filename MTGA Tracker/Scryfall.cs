@@ -181,6 +181,7 @@ namespace MTGA_Tracker
                         card.power = cardFromScryfall.power;
                         card.toughness = cardFromScryfall.toughness;
                         card.colors = cardFromScryfall.colors;
+                        card.color_identity = cardFromScryfall.color_identity;
                         card.setName = cardFromScryfall.setName;
 
                         //Check if card is multi-faced
@@ -207,9 +208,25 @@ namespace MTGA_Tracker
                 }
             }
 
+            return SortDecks(decks);
+        }
+
+        //Sorts cards in each deck based on a custom sorting priority
+        private static List<Decks.Deck> SortDecks(List<Decks.Deck> decks)
+        {
+            //https://stackoverflow.com/questions/54590688/sorting-a-listt-based-on-ts-liststring-property/
+
+            // Higher-priority colours come first
+            var coloursPriority = new List<string>() { "W", "U", "B", "R", "G" };
+
+            // Turn the card's colour into an index. If the card has multiple colours,
+            // pick the smallest of the corresponding indexes.
+            decks[0].mainDeck = decks[0].mainDeck.OrderBy(card => card.color_identity.Select(colour => coloursPriority.IndexOf(colour)).Min()).ToList();
+
             return decks;
         }
 
+        //Get card data from Scryfall based on Arena Id
         private static RootObject GetCardFromScryfall(string id)
         {
             var client = new RestClient("https://api.scryfall.com/");

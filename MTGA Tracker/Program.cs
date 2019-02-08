@@ -12,29 +12,37 @@ namespace MTGA_Tracker
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
 
-            Test();
+            //Test();
 
             Console.ReadLine();
         }
 
         private static void Test()
         {
+
+
             List<Decks.Deck> decks = Scryfall.AddDataFromScryfall();
             foreach (var deck in decks)
             {
                 Console.WriteLine("#####\nDeck name: " + deck.name + "\n#####\n");
                 foreach (var card in deck.mainDeck)
                 {
-                    Console.WriteLine(card.name + " " + card.quantity);
+                    try
+                    {
+                        Console.WriteLine(card.name + " " + card.quantity + " " + card.color_identity.ToString());
+                    }
+                    catch (NullReferenceException)
+                    {
+                        Console.WriteLine("ERROR: card missing {0}", card.id);
+                    }
                 }
                 Console.WriteLine("\n");
             }
-
             foreach (var cardFace in decks[8].mainDeck[21].card_faces)
             {
                 Console.WriteLine(cardFace.name);
             }
-            
+
             //Console.WriteLine("###\n\n" + Deck.GetDecks().Count + "\n\n###\n");
 
             //foreach (var deck in Deck.GetDecks())

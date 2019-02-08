@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MTGA_Tracker
 {
@@ -25,6 +26,7 @@ namespace MTGA_Tracker
             public string power { get; set; }
             public string toughness { get; set; }
             public List<string> colors { get; set; }
+            public List<string> color_identity { get; set; }
             public string setName { get; set; }
             public ImageUris image_uris { get; set; }
         }
