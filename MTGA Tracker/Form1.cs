@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -11,11 +13,30 @@ namespace MTGA_Tracker
             InitializeComponent();
         }
 
-        private async void flowLayoutPanel1_DoubleClick(object sender, System.EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.BackColor = Color.Black;
+
+            ////Create the FlowLayoutPanel and set its properties and events
+            //TableLayoutPanel tableLayoutPanel = new TableLayoutPanel();
+            //tableLayoutPanel.AutoScroll = true;
+            //tableLayoutPanel.Dock = DockStyle.Fill;
+            //this.Controls.Add(tableLayoutPanel);
+
+            //Create the FlowLayoutPanel and set its properties and events
+            FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel();
+            flowLayoutPanel.DoubleClick += flowLayoutPanel_DoubleClick;
+            flowLayoutPanel.AutoScroll = true;
+            flowLayoutPanel.Dock = DockStyle.Fill;
+            this.Controls.Add(flowLayoutPanel);
+        }
+
+        private async void flowLayoutPanel_DoubleClick(object sender, EventArgs e)
         {
             List<Decks.Deck> decks = Scryfall.AddDataFromScryfall();
             foreach (var card in decks[8].mainDeck)
             {
+                //Create a new Picture Box for the card image
                 PictureBox pictureBox = new PictureBox();
 
                 //Check if card is multi-faced
@@ -29,14 +50,27 @@ namespace MTGA_Tracker
                     //MessageBox.Show(card.name);
                     await Task.Run(() => pictureBox.Load(card.image_uris.small));
                 }
-                pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
-                flowLayoutPanel1.Controls.Add(pictureBox);
-            }
-        }
 
-        private void Form1_Load(object sender, System.EventArgs e)
-        {
-            this.WindowState = FormWindowState.Maximized;
+                //Set autosizing for the Picture Box
+                pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
+
+                //using (Graphics G = Graphics.FromImage(pictureBox.Image))
+                //{
+                //    using (var sf = new StringFormat()
+                //    {
+                //        Alignment = StringAlignment.Center,
+                //        LineAlignment = StringAlignment.Center,
+                //    })
+                //    {
+                //        G.DrawString(card.name, new Font("Tahoma", 20), Brushes.White, new Rectangle(0, 0, pictureBox.Width, pictureBox.Height), sf);
+                //    }
+                //} 
+                //pictureBox.Invalidate();
+
+                //Add the control to the Flow Layout Panel
+                FlowLayoutPanel flowLayoutPanel = (FlowLayoutPanel)sender;
+                flowLayoutPanel.Controls.Add(pictureBox);
+            }
         }
     }
 }
