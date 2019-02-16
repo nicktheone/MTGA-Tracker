@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace MTGA_Tracker
 {
@@ -51,7 +52,7 @@ namespace MTGA_Tracker
             string s = GetLog();
 
             //Create the RegEx string and normalize new line characters
-            Regex regex = new Regex(@"(?:Deck\.GetDeckLists\([\d]+\)(?:\n|\r|\r\n))(.*?)(}(?:\n\n|\r\r|\r\n\r\n)])", RegexOptions.Singleline);
+            Regex regex = new Regex(@"(?:Deck\.GetDeckLists\([\d]+\)(?:\n|\r|\r\n))(.*?)(}(?:\n|\r|\r\n)])", RegexOptions.Singleline);
             s = Regex.Replace(s, @"\r\n|\r|\n", "\r\n");
 
             if (regex.IsMatch(s))
@@ -87,7 +88,7 @@ namespace MTGA_Tracker
             }
             else
             {
-                Console.WriteLine("no");
+                MessageBox.Show("no");
 
                 return null;
             }

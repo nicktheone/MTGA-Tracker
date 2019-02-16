@@ -51,6 +51,7 @@
             this.Name = "Form1";
             this.Padding = new System.Windows.Forms.Padding(20);
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }

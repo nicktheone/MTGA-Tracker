@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using RestSharp.Extensions;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace MTGA_Tracker
 {
@@ -183,9 +184,10 @@ namespace MTGA_Tracker
                         card.colors = cardFromScryfall.colors;
                         card.color_identity = cardFromScryfall.color_identity;
                         card.setName = cardFromScryfall.setName;
+                        card.layout = cardFromScryfall.layout;
 
                         //Check if card is multi-faced
-                        if (cardFromScryfall.layout == "transform")
+                        if (card.layout == "transform")
                         {
                             //Take each card face and converts them (https://stackoverflow.com/questions/40148491/cast-class-a-to-class-b-without-generics/40148572#40148572)
                             card.card_faces = cardFromScryfall.card_faces.Select(a => new Decks.CardFace()
@@ -203,25 +205,60 @@ namespace MTGA_Tracker
                     //Output which card is giving issues
                     catch (NullReferenceException)
                     {
-                        Console.WriteLine("ERROR: card missing {0}", card.id);
+                        MessageBox.Show("ERROR: card missing {0}", card.id);
                     }
                 }
             }
 
+            //Return a list of sorted decks
             return SortDecks(decks);
         }
 
-        //Sorts cards in each deck based on a custom sorting priority
         private static List<Decks.Deck> SortDecks(List<Decks.Deck> decks)
+        {
+            foreach (var deck in decks)
+            {
+                List<Decks.Card> redCards = new List<Decks.Card>();
+                List<Decks.Card> blueCards = new List<Decks.Card>();
+                List<Decks.Card> blackCards = new List<Decks.Card>();
+                List<Decks.Card> whiteCards = new List<Decks.Card>();
+                List<Decks.Card> greenCards = new List<Decks.Card>();
+                List<Decks.Card> noColorCards = new List<Decks.Card>();
+
+                redCards = deck.mainDeck.Where(card => card.color_identity.Contains("R")).ToList();
+                blueCards = deck.mainDeck.Where(card => card.color_identity.Contains("U")).ToList();
+                blackCards = deck.mainDeck.Where(card => card.color_identity.Contains("B")).ToList();
+                whiteCards = deck.mainDeck.Where(card => card.color_identity.Contains("W")).ToList();
+                greenCards = deck.mainDeck.Where(card => card.color_identity.Contains("G")).ToList();
+                var cards = redCards.Union(blueCards).Union(blackCards).Union(whiteCards).Union(greenCards).ToList();
+                noColorCards = deck.mainDeck.Except(cards).ToList();
+                deck.mainDeck = cards.Union(noColorCards).ToList();
+            }
+
+            return decks;
+        }
+
+        //Sorts cards in each deck based on a custom sorting priority
+        private static List<Decks.Deck> SortDecks2(List<Decks.Deck> decks)
         {
             //https://stackoverflow.com/questions/54590688/sorting-a-listt-based-on-ts-liststring-property/
 
             // Higher-priority colours come first
-            var coloursPriority = new List<string>() { "W", "U", "B", "R", "G" };
+            var coloursPriority = new List<string>() { "W", "U", "B", "R", "G", };
 
-            // Turn the card's colour into an index. If the card has multiple colours,
-            // pick the smallest of the corresponding indexes.
-            decks[0].mainDeck = decks[0].mainDeck.OrderBy(card => card.color_identity.Select(colour => coloursPriority.IndexOf(colour)).Min()).ToList();
+            foreach (var deck in decks)
+            {
+                // Turn the card's colour into an index. If the card has multiple colours,
+                // pick the smallest of the corresponding indexes.
+                try
+                {
+                    deck.mainDeck = deck.mainDeck.OrderBy(card => card.color_identity.Select(colour => coloursPriority.IndexOf(colour)).Min()).ToList();
+                }
+                catch (Exception)
+                {
+                    //throw;
+                }
+            }
 
             return decks;
         }
