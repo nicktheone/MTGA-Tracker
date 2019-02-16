@@ -57,13 +57,8 @@ namespace MTGA_Tracker
 
             if (regex.IsMatch(s))
             {
-                //Console.WriteLine("###\n\nYes match\n\n###\n\n");
-
                 //Create a collection containing the results
                 MatchCollection matchCollection = regex.Matches(s);
-
-                //Console.WriteLine("matchCollection count: " + matchCollection.Count);
-                //Console.WriteLine("matchCollection[0].Groups count: " + matchCollection[0].Groups.Count);
 
                 //Get the latest deck list and combines both capturing groups
                 string ss = matchCollection[matchCollection.Count - 1].Groups[1].Value + matchCollection[matchCollection.Count - 1].Groups[2].Value;
