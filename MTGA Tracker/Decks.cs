@@ -27,6 +27,7 @@ namespace MTGA_Tracker
             public string toughness { get; set; }
             public List<string> colors { get; set; }
             public List<string> color_identity { get; set; }
+            public string type_line { get; set; }
             public string setName { get; set; }
             public ImageUris image_uris { get; set; }
         }

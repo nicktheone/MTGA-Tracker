@@ -185,6 +185,7 @@ namespace MTGA_Tracker
                         card.color_identity = cardFromScryfall.color_identity;
                         card.setName = cardFromScryfall.setName;
                         card.layout = cardFromScryfall.layout;
+                        card.type_line = cardFromScryfall.type_line;
 
                         //Check if card is multi-faced
                         if (card.layout == "transform")
@@ -218,6 +219,7 @@ namespace MTGA_Tracker
         {
             foreach (var deck in decks)
             {
+                //Create a list for every color
                 List<Decks.Card> redCards = new List<Decks.Card>();
                 List<Decks.Card> blueCards = new List<Decks.Card>();
                 List<Decks.Card> blackCards = new List<Decks.Card>();
@@ -225,13 +227,20 @@ namespace MTGA_Tracker
                 List<Decks.Card> greenCards = new List<Decks.Card>();
                 List<Decks.Card> noColorCards = new List<Decks.Card>();
 
-                redCards = deck.mainDeck.Where(card => card.color_identity.Contains("R")).ToList();
-                blueCards = deck.mainDeck.Where(card => card.color_identity.Contains("U")).ToList();
-                blackCards = deck.mainDeck.Where(card => card.color_identity.Contains("B")).ToList();
-                whiteCards = deck.mainDeck.Where(card => card.color_identity.Contains("W")).ToList();
-                greenCards = deck.mainDeck.Where(card => card.color_identity.Contains("G")).ToList();
+                //Assign each card to its list
+                redCards = deck.mainDeck.Where(card => card.color_identity.Contains("R")).OrderBy(card => card.type_line.Contains("Land")).ToList();
+                blueCards = deck.mainDeck.Where(card => card.color_identity.Contains("U")).OrderBy(card => card.type_line.Contains("Land")).ToList();
+                blackCards = deck.mainDeck.Where(card => card.color_identity.Contains("B")).OrderBy(card => card.type_line.Contains("Land")).ToList();
+                whiteCards = deck.mainDeck.Where(card => card.color_identity.Contains("W")).OrderBy(card => card.type_line.Contains("Land")).ToList();
+                greenCards = deck.mainDeck.Where(card => card.color_identity.Contains("G")).OrderBy(card => card.type_line.Contains("Land")).ToList();
+
+                //Create a list with all colors
                 var cards = redCards.Union(blueCards).Union(blackCards).Union(whiteCards).Union(greenCards).ToList();
-                noColorCards = deck.mainDeck.Except(cards).ToList();
+
+                //Assign artifact cards to their list with a difference between all cards and colored cards
+                noColorCards = deck.mainDeck.Except(cards).OrderBy(card => card.type_line.Contains("Land")).ToList();
+
+                //Replace the card list with the sorted list
                 deck.mainDeck = cards.Union(noColorCards).ToList();
             }
 
