@@ -38,6 +38,8 @@ namespace MTGA_Tracker
             {
                 //Create a new Picture Box for the card image
                 PictureBox pictureBox = new PictureBox();
+                pictureBox.MouseHover += PictureBox_MouseHover;
+                pictureBox.Tag = card;
 
                 //Check if card is multi-faced
                 if (card.layout == "transform")
@@ -71,6 +73,18 @@ namespace MTGA_Tracker
                 FlowLayoutPanel flowLayoutPanel = (FlowLayoutPanel)sender;
                 flowLayoutPanel.Controls.Add(pictureBox);
             }
+        }
+
+        private void PictureBox_MouseHover(object sender, EventArgs e)
+        {
+            PictureBox pictureBox = (PictureBox)sender;
+            Decks.Card card = (Decks.Card)pictureBox.Tag;
+
+            PictureBox pictureBox2 = new PictureBox();
+            pictureBox2.Load(card.image_uris.small);
+            pictureBox2.Location = new Point(50, 50);
+            Controls.Add(pictureBox2);
+            pictureBox2.BringToFront();
         }
     }
 }
